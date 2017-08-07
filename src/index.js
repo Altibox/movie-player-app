@@ -1,10 +1,18 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { Provider } from 'react-redux'
+import './index.css'
+import App from './App'
+import createStore from './store'
+
+let store = createStore()
 
 function render(Component) {
-  ReactDOM.render(<Component />, document.getElementById('root'))
+  ReactDOM.render(
+    <Provider store={store}>
+      <Component />
+    </Provider>
+  , document.getElementById('root'))
 }
 
 render(App);
@@ -15,3 +23,8 @@ if (module.hot) {
     render(NextApp);
   })
 }
+
+// Bootstrapp app
+// ajax.loadShit((movies) => {
+//   store.dispath({ type: 'SET_MOVIES', movies: movies })
+//})

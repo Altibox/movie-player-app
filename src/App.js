@@ -1,18 +1,11 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import Player from '@altibox/demo-altibox-player'
 import Controls from '@altibox/videocontrol'
 import MovieList from '@altibox/movie-list'
 import './App.css';
 
 class App extends Component {
-  state = {
-    movies: {
-      'muvi': 'http://techslides.com/demos/sample-videos/small.mp4',
-      'muvi2': 'http://clips.vorwaerts-gmbh.de/VfE_html5.mp4'
-    },
-    selectedMovieIndex: 0,
-    playing: false
-  }
   render() {
     return (
       <div className="App">
@@ -23,20 +16,21 @@ class App extends Component {
           <div style={styles.playerContainer}>
             <div style={styles.player}>
               <Player
-                playing={this.state.playing}
-                url={Object.values(this.state.movies)[this.state.selectedMovieIndex]}
+                playing={this.props.playing}
+                url={Object.values(this.props.movies)[this.props.selectedMovieIndex]}
               />
             </div>
             <div style={styles.controller}>
               <Controls 
-                isPlaying={this.state.playing}
+                isPlaying={this.props.playing}
                 onEvent={this.onControlEvent.bind(this)} />
             </div>
           </div>
           <div style={styles.listContainer}>
             <MovieList 
-              movies={this.state.movies} 
-              selected={this.state.selectedMovieIndex}
+              movies={this.props.movies} 
+              selected={this.props.selectedMovieIndex}
+              onMoviesFetched={this.setMovies.bind(this)}
               onMovieClick={this.selectMovie.bind(this)}
             />
           </div>
@@ -44,12 +38,22 @@ class App extends Component {
       </div>
     );
   }
+  setMovies(movies) {
+    this.props.dispatch({
+      type: 'SET_MOVIES',
+      movies: movies
+    })
+  }
   selectMovie(uri) {
-    var index = Object.values(this.state.movies).indexOf(uri)
-    this.setState({ selectedMovieIndex: index })
+    this.props.dispatch({
+      type: 'SELECT_MOVIE',
+      uri: uri
+    })
   }
   onControlEvent(event) {
-    this.setState({ playing: !this.state.playing })
+    this.props.dispatch({
+      type: 'TOGGLEPLAY',
+    })
   }
 }
 
@@ -76,4 +80,6 @@ let styles = {
   }
 }
 
-export default App;
+export default connect(state => {
+  return state
+})(App)
